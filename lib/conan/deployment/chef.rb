@@ -60,7 +60,11 @@ namespace :chef do
   before "chef:bootstrap", "chef:rsync"
   task :bootstrap do
     with_user "ubuntu" do
-      run "sudo env INSTALL_RUBY=#{ruby_version} /etc/chef/recipes/cookbooks/bootstrap/bootstrap.sh"
+      env = "INSTALL_RUBY=#{ruby_version}"
+      if defined?(ruby_apt_package) && ruby_apt_package
+        env << %Q[ RUBY_APT_PACKAGE="#{ruby_apt_package}"]
+      end
+      run "sudo env #{env} /etc/chef/recipes/cookbooks/bootstrap/bootstrap.sh"
     end
   end
 
